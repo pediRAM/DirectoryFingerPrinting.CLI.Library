@@ -1,82 +1,139 @@
-![logo](https://raw.githubusercontent.com/pediRAM/DirectoryFingerPrintingLibrary/main/Documentation/icon.png)
+
+![logo](https://raw.githubusercontent.com/pediRAM/DirectoryFingerPrinting.CLI.Library/main/Documentation/icon.png)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Release](https://img.shields.io/github/release/pediRAM/DirectoryFingerPrintingLibrary.svg?sort=semver)](https://github.com/pediRAM/DirectoryFingerPrintingLibrary/releases)
-[![NuGet](https://img.shields.io/nuget/v/DirectoryFingerPrinting.Library)](https://www.nuget.org/packages/DirectoryFingerPrinting.Library)
-
-This is the english documentation. Following translations are available:
-- [普通话 (Mandarin) :cn:](Documentation/Mandarin.md)
-- [Español :es:](Documentation/Spanish.md)
-- [Pусский :ru:](Documentation/Russian.md)
-- [Deutsch :de: :austria: :switzerland:](Documentation/German.md)
-- [हिंदी :india:](Documentation/Hindi.md)
-- [Türkçe :tr:](Documentation/Turkish.md)
-- [فارسی :iran: :afghanistan: :tajikistan:](Documentation/Farsi.md)
+[![Release](https://img.shields.io/github/release/pediRAM/DirectoryFingerPrinting.CLI.Library.svg?sort=semver)](https://github.com/pediRAM/DirectoryFingerPrinting.CLI.Library/releases)
+[![NuGet](https://img.shields.io/nuget/v/DirectoryFingerPrinting.CLI.Library)](https://www.nuget.org/packages/DirectoryFingerPrinting.CLI.Library)
 
 
-# DirectoryFingerPrinting
-**DirectoryFingerPrinting** (short: **DFP**) is a powerful .NET/C# library designed for creating and collecting file and directory checksums and metadatas, for forensic, version or change management tasks.
+# DirectoryFingerPrinting.CLI.Library
+This library provides types and methods for parsing specific arguments used by "DirectoryFingerPrinting.CLI" (dfp.exe), comparing two file-metadata, exporting reports in CSV, JSON or XML, help text etc., which are used by the cli application "dpf.exe" and you can find in my other repository "DirectoryFingerPrinting.CLI".
 
-**Purpose:** This library offers types and methods for retrieving all or specific (configurable) differences between the files in two directories.
-Save the current state (meta-data of whole files) of a directory as a tiny **DFP** file, later you can compare the content of the directory against the **DFP** file and so recognize if there were any changes, and if so what has been changed in that directory.
+## Parameters
+Following parameters are currently parsed, recognized and in use:
 
-The **DFP** library offers a comprehensive set of features, including:
+| Parameter                      | Examples (using short names)                                          |
+|--------------------------------|-----------------------------------------------------------------------|
+| --assemblies-only              | dfp -ao --directory .\                                                |
+| --directory                    | dfp --directory .\                                                    |
+| --ignore-timestamps            | dfp -its -d .\                                                        |
+| --ignore-size                  | dfp -is -d .\                                                         |
+| --ignore-creation-date         | dfp -icd -d .\                                                        |
+| --ignore-last-modification     | dfp -ilm -d .\                                                        |
+| --ignore-last-access           | dfp -ila -d .\                                                        |
+| --ignore-version               | dfp -iv -d .\                                                         |
+| --ignore-checksum              | dfp -ics -d .\                                                        |
+| --ignore-hidden-files          | dfp -ihf -d .\                                                        |
+| --ignore-access-errors         | dfp -iae -d .\                                                        |
+| --ignore-case                  | dfp -ic -d .\                                                         |
+| --recursive                    | dfp -r -d .\                                                          |
+| --positive-list                | dfp -p -d .\ -x "json,txt,xml,yaml"                                   |
+| --negative-list                | dfp -n -d .\ -x "log,md" -ihf                                         |
+| --extensions                   | dfp -x "json,txt,xml,yaml" -d .\                                      |
+| --use-crc32                    | dfp -crc32 -d .\                                                      |
+| --use-md5                      | dfp -md5 -d .\                                                        |
+| --use-sha1                     | dfp -d .\ -sha1                                                       |
+| --use-sha256                   | dfp -d .\ -sha256                                                     |
+| --use-sha512                   | dfp -d .\ -sha512                                                     |
+| --report-essential             | dfp -re -d .\                                                         |
+| --report-informative           | dfp -ri -d .\                                                         |
+| --report-verbose               | dfp -rv -d .\                                                         |
+| --print-colored                | dfp -pc -d .\                                                         |
+| --no-header                    | dfp -nh -d .\                                                         |
+| --no-format                    | dfp -nf -d .\                                                         |
+| --print-sorted-ascendent       | dfp -asc -d .\                                                        |
+| --print-sorted-descendent      | dfp -desc -d .\                                                       |
+| --print-only-filename          | dfp -pof -d .\                                                        |
+| --save                         | dfp -s "C:\MyDFP Files\Test" -d "C:\MyDir" --recursive                |
+| --format-dfp                   | dfp -dfp "C:\MyDFP Files\Test" -d "C:\MyDir" -r                       |
+| --format-xml                   | dfp -xml "C:\MyDFP Files\Test" -d "C:\MyDir" -r                       |
+| --format-json                  | dfp -json "C:\MyDFP Files\Test" -d "C:\MyDir" -r                      |
+| --format-csv                   | dfp -csv "C:\MyDFP Files\Test" -d "C:\MyDir" -r                       |
+| --compare-directories          | dfp -cd "C:\MyDir1" "C:\MyDir2"                                       |
+| --compare-fingerprints         | dfp -cf "temp\fingerprint1.dfp" "temp\fingerprint2.json"              |
+| --compare                      | dfp -c "temp\fingerprint.dfp" "C:\MyDir"                              |
+| --use-color                    | dfp -pc -d .\                                                         |
+| --load-options                 | dfp -lo "options.txt" -d .\                                           |
+| --save-options                 | dfp -so "options.txt" -d .\                                           |
+| --versions                     | dfp --versions                                                        |
+| --checksums                    | dfp --checksums                                                       |
+| --sizes                        | dfp --sizes                                                           |
+| --help                         | dfp -h                                                                |
+| --version                      | dfp -v                                                                |
 
-- Retrieving metadata such as **checksum**, creation date, **last modification date**, and **size** for files in a directory and subdirectories (recursive).
-- **Calculating checksums** (**hashes**) for all files within a directory.
-- **Comparing and detecting changes** between two directories or fingerprint files.
-## Key Features
-- **Obtain file metadata**: Access creation dates, modification dates, sizes, and more.
-- **Calculate checksums**: Generate hash values (e.g., SHA-1) for files within a directory.
-- **Identify changes**: Detect additions, removals, and modifications to files.
-- **Efficient file comparisons**: Quickly compare and report differences between directories.
-- **Selectable hashing algorithms**: CRC32, MD5, SHA1, SHA256, SHA512
+## Examples for using parameters
 
-## UML class diagramm
-![UML class diagram](Documentation/UML_Class_Diagram.png)
+| Parameter (long name)          | Examples (using short name)                                           |
+|--------------------------------|-----------------------------------------------------------------------|
+| --assemblies-only              | dfp -ao --directory C:\myDir                                          |
+| --directory                    | dfp -d "C:\My Personal Directory"                                     |
+| --ignore-timestamps            | dfp -its -d .\                                                        |
+| --ignore-size                  | dfp -is -d ..\                                                        |
+| --ignore-creation-date         | dfp -icd -d .\                                                        |
+| --ignore-last-modification     | dfp -ilm -d .\                                                        |
+| --ignore-last-access           | dfp -ila -d .\                                                        |
+| --ignore-version               | dfp -iv -d .\                                                         |
+| --ignore-checksum              | dfp -ics -d .\                                                        |
+| --ignore-hidden-files          | dfp -ihf -d .\                                                        |
+| --ignore-access-errors         | dfp -iae -d .\                                                        |
+| --ignore-case                  | dfp -ic -d .\                                                         |
+| --recursive                    | dfp -r -d .\                                                          |
+| --positive-list                | dfp -p -d .\ -x "json,txt,xml,yaml"                                   |
+| --negative-list                | dfp -n -d .\ -x "log,md" -ihf                                         |
+| --extensions                   | dfp -x "json,txt,xml,yaml" -d .\                                      |
+| --use-crc32                    | dfp -crc32 -d .\                                                      |
+| --use-md5                      | dfp -md5 -d .\                                                        |
+| --use-sha1                     | dfp -d .\ -sha1                                                       |
+| --use-sha256                   | dfp -d .\ -sha256                                                     |
+| --use-sha512                   | dfp -d .\ -sha512                                                     |
+| --report-essential             | dfp -re -d .\                                                         |
+| --report-informative           | dfp -ri -d .\                                                         |
+| --report-verbose               | dfp -rv -d .\                                                         |
+| --print-colored                | dfp -pc -d .\                                                         |
+| --no-header                    | dfp -nh -d .\                                                         |
+| --no-format                    | dfp -nf -d .\                                                         |
+| --print-sorted-ascendent       | dfp -asc -d .\                                                        |
+| --print-sorted-descendent      | dfp -desc -d .\                                                       |
+| --print-only-filename          | dfp -pof -d .\                                                        |
+| --save                         | dfp -s "C:\MyDFP Files\Test" -d "C:\MyDir" --recursive                |
+| --format-dfp                   | dfp -dfp "C:\MyDFP Files\Test" -d "C:\MyDir" -r                       |
+| --format-xml                   | dfp -xml "C:\MyDFP Files\Test" -d "C:\MyDir" -r                       |
+| --format-json                  | dfp -json "C:\MyDFP Files\Test" -d "C:\MyDir" -r                      |
+| --format-csv                   | dfp -csv "C:\MyDFP Files\Test" -d "C:\MyDir" -r                       |
+| --compare-directories          | dfp -cd "C:\MyDir1" "C:\MyDir2"                                       |
+| --compare-fingerprints         | dfp -cf "temp\fingerprint1.dfp" "temp\fingerprint2.json"              |
+| --compare                      | dfp -c "temp\fingerprint.dfp" "C:\MyDir"                              |
+| --use-color                    | dfp -pc -d .\                                                         |
+| --load-options                 | dfp -lo "options.txt" -d .\                                           |
+| --save-options                 | dfp -so "options.txt" -d .\                                           |
+| --versions                     | dfp --versions                                                        |
+| --checksums                    | dfp --checksums                                                       |
+| --sizes                        | dfp --sizes                                                           |
+| --help                         | dfp -h                                                                |
+| --version                      | dfp -v                                                                |
 
 
-## Demonstration code
-```cs
-public void Demo()
-{
-   // Create settings:
-   IOptions options = new Options
-   {
-         UseHashsum = true,
-         UseSize = true,
-         UseVersion = true,
-         UseLastModification = true,
-         HashAlgo = EHashAlgo.SHA512,
-         // More options...
-   };
+## Error codes
+Following error codes (integer) are returned after cli executable has terminated.
+You can output them in prompt/cmd by:
 
-   // Create metadata factory:
-   IMetaDataFactory metaDataFactory = new MetaDataFactory(options);
-
-   // Get the metadata for a single file:
-   IMetaData metaData1 = metaDataFactory.CreateMetaData(@"C:\dir\filePath.ext");
-   IMetaData metaData2 = metaDataFactory.CreateMetaData(new FileInfo(@"C:\dir\filePath.ext"));
-
-   // Get the metadata for files in a directory:
-   IEnumerable<IMetaData> metaDatasB = metaDataFactory.CreateMetaDatas(@"C:\dirPath");
-   IEnumerable<IMetaData> metaDatasA = metaDataFactory.CreateMetaDatas(new DirectoryInfo(@"C:\dirPath"));
-
-   // Create differencies-calculator factory:
-   IDirDiffCalculator diffCalculator = new DirDiffCalculator(options);
-
-   // Get file differencies between files in A and B:
-   IEnumerable<IFileDiff> differences1 = diffCalculator.GetFileDifferencies(metaDatasA, metaDatasB);
-
-   // Get file differencies between two DFP (files):
-   IDirectoryFingerprint dfpA = null;
-   IDirectoryFingerprint dfpB = null;
-   // Load/convert dfp A...
-   // Load/convert dfp B...
-
-   // Get file differencies between dfpA and dfpB:
-   IEnumerable<IFileDiff> differences2 = diffCalculator.GetFileDifferencies(dfpA, dfpB);
-
-   // Show or save differences2...
-}
+```cmd
+echo %errorlevel%
 ```
+
+| Error Code | Description                                                    |
+|------------|----------------------------------------------------------------|
+| 0          | OK (no error).                                                 |
+| 1          | No parameters.                                                 |
+| 2          | Missing parameter.                                             |
+| 3          | Unknown parameter.                                             |
+| 4          | Internal error.                                                |
+| 5          | Illegal value.                                                 |
+| 6          | Single parameter.                                              |
+| 7          | File already exists.                                           |
+| 8          | Writing fingerprint file failed.                               |
+| 9          | File not found.                                                |
+| 10         | Directory not found.                                           |
+| 11         | Calculate, save, and compare at once are not provided.         |
+| 12         | Illegal/Unknown fingerprint file extension.                    |
+| 13         | Unequal hashsum algorithms.                                    |
