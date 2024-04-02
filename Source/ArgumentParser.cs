@@ -606,7 +606,7 @@ namespace DirectoryFingerPrinting.CLI.Library
                         break;
 
                         case Const.Arguments.CHECKSUMS:
-                        SetAssembliesOnly(pOptions);
+                        // 1.0.1 SetAssembliesOnly(pOptions);
                         IgnoreTimestamps(pOptions);
                         pOptions.UseSize = false;
                         pOptions.UseHashsum = true;
